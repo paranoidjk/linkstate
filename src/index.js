@@ -7,8 +7,11 @@ import delve from 'dlv';
  *	@returns {function} linkedStateHandler
  */
 export default function linkState(component, key, eventPath) {
-	let path = key.split('.');
-	return function(e) {
+	const path = key.split('.');
+	const c = component._linkedStates || (component._linkedStates = {});
+	const cachePath = key + '\n' + eventPath;
+
+	return c[cachePath] || (c[cachePath] = function(e) {
 		let t = e && e.target || this,
 			state = {},
 			obj = state,
@@ -19,5 +22,5 @@ export default function linkState(component, key, eventPath) {
 		}
 		obj[path[i]] = v;
 		component.setState(state);
-	};
+	});
 }
